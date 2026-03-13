@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "types": ["vite/client"],
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@core/*": ["src/core/*"],
+      "@modules/*": ["src/modules/*"],
+      "@templates/*": ["src/templates/*"],
+      "@sites/*": ["src/sites/*"],
+      "@lib/*": ["src/lib/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types/*": ["src/types/*"],
+      "@components/*": ["src/components/*"]
+    },
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
