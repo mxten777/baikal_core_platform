@@ -7,14 +7,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Supabase mock
-const mockSingle = vi.fn()
+const mockMaybeSingle = vi.fn()
 vi.mock('@lib/supabase', () => ({
   supabase: {
     from: () => ({
       select: () => ({
         eq: () => ({
           eq: () => ({
-            single: () => mockSingle(),
+            maybeSingle: () => mockMaybeSingle(),
           }),
         }),
       }),
@@ -67,7 +67,7 @@ const DB_ROW = {
 
 describe('settingsService.loadSiteConfig', () => {
   it('DB 조회 성공 시 DB 데이터를 반환한다', async () => {
-    mockSingle.mockResolvedValue({ data: DB_ROW, error: null })
+    mockMaybeSingle.mockResolvedValue({ data: DB_ROW, error: null })
 
     const result = await settingsService.loadSiteConfig('baikalsys')
 
@@ -79,7 +79,7 @@ describe('settingsService.loadSiteConfig', () => {
   })
 
   it('DB 조회 실패 시 LOCAL_CONFIGS fallback을 사용한다', async () => {
-    mockSingle.mockResolvedValue({
+    mockMaybeSingle.mockResolvedValue({
       data: null,
       error: { message: 'Connection refused' },
     })
@@ -92,7 +92,7 @@ describe('settingsService.loadSiteConfig', () => {
   })
 
   it('DB 실패 + local fallback도 없으면 에러를 반환한다', async () => {
-    mockSingle.mockResolvedValue({
+    mockMaybeSingle.mockResolvedValue({
       data: null,
       error: { message: 'Connection refused' },
     })
@@ -105,7 +105,7 @@ describe('settingsService.loadSiteConfig', () => {
   })
 
   it('캐시된 설정은 DB를 다시 호출하지 않는다', async () => {
-    mockSingle.mockResolvedValue({ data: DB_ROW, error: null })
+    mockMaybeSingle.mockResolvedValue({ data: DB_ROW, error: null })
 
     // 첫 번째 호출 — DB 조회
     await settingsService.loadSiteConfig('baikalsys')
@@ -113,7 +113,7 @@ describe('settingsService.loadSiteConfig', () => {
     const cached = await settingsService.loadSiteConfig('baikalsys')
 
     expect(cached.data?.name).toBe('DB Site')
-    expect(mockSingle).toHaveBeenCalledTimes(1) // DB는 한 번만 호출
+    expect(mockMaybeSingle).toHaveBeenCalledTimes(1) // DB는 한 번만 호출
   })
 })
 

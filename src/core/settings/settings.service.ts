@@ -35,31 +35,42 @@ export const settingsService = {
   async loadSiteConfig(slug: string): Promise<ApiResult<SiteConfig>> {
     if (cache.has(slug)) return { data: cache.get(slug)!, error: null }
 
-    const { data, error } = await supabase
-      .from('sites')
-      .select(
-        `
-        id,
-        slug,
-        name,
-        domain,
-        type,
-        template_id,
-        status,
-        site_settings (
-          locale,
-          timezone,
-          meta,
-          feature_flags,
-          modules
-        )
-      `,
-      )
-      .eq('slug', slug)
-      .eq('status', 'active')
-      .single()
+    let dbData: Record<string, unknown> | null = null
+    let dbError: { message: string } | null = null
 
-    if (error || !data) {
+    try {
+      const { data, error } = await supabase
+        .from('sites')
+        .select(
+          `
+          id,
+          slug,
+          name,
+          domain,
+          type,
+          template_id,
+          status,
+          site_settings (
+            locale,
+            timezone,
+            meta,
+            feature_flags,
+            modules
+          )
+        `,
+        )
+        .eq('slug', slug)
+        .eq('status', 'active')
+        .maybeSingle()
+
+      dbData = data as Record<string, unknown> | null
+      dbError = error
+    } catch (e) {
+      // supabase 쿼리가 예외를 던진 경우 (네트워크 오류, schema 불일치 등)
+      dbError = { message: e instanceof Error ? e.message : 'DB query failed' }
+    }
+
+    if (dbError || !dbData) {
       // DB 실패 시 로컬 config fallback (개발 환경)
       const local = LOCAL_CONFIGS[slug]
       if (local) {
@@ -68,26 +79,26 @@ export const settingsService = {
       }
       return {
         data: null,
-        error: { code: 'SITE_NOT_FOUND', message: error?.message ?? 'Site not found' },
+        error: { code: 'SITE_NOT_FOUND', message: dbError?.message ?? 'Site not found' },
       }
     }
 
-    const settings = Array.isArray(data.site_settings)
-      ? data.site_settings[0]
-      : data.site_settings
+    const settings = Array.isArray(dbData.site_settings)
+      ? (dbData.site_settings as Record<string, unknown>[])[0]
+      : dbData.site_settings as Record<string, unknown> | null
 
     const config: SiteConfig = {
-      siteId: data.id as string,
-      slug: data.slug as string,
-      name: data.name as string,
-      domain: (data.domain as string) ?? '',
-      type: data.type as SiteConfig['type'],
-      templateId: data.template_id as string,
+      siteId: dbData.id as string,
+      slug: dbData.slug as string,
+      name: dbData.name as string,
+      domain: (dbData.domain as string) ?? '',
+      type: dbData.type as SiteConfig['type'],
+      templateId: dbData.template_id as string,
       modules: (settings?.modules as string[]) ?? [],
       locale: (settings?.locale as string) ?? 'ko',
       timezone: (settings?.timezone as string) ?? 'Asia/Seoul',
       meta: (settings?.meta as SiteConfig['meta']) ?? {
-        title: data.name as string,
+        title: dbData.name as string,
         description: '',
         keywords: [],
         ogImage: null,
