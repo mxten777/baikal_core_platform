@@ -27,11 +27,16 @@ comment on table organizations is '플랫폼에 등록된 조직(회사/개인)'
 -- ============================================================
 -- 2. sites
 -- ============================================================
-create type site_status as enum ('active', 'inactive', 'maintenance');
-create type site_type   as enum (
-  'corporate', 'hospital', 'commerce',
-  'expert', 'portfolio', 'content'
-);
+do $$ begin
+  create type site_status as enum ('active', 'inactive', 'maintenance');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type site_type as enum (
+    'corporate', 'hospital', 'commerce',
+    'expert', 'portfolio', 'content'
+  );
+exception when duplicate_object then null; end $$;
 
 create table if not exists sites (
   id              uuid primary key default uuid_generate_v4(),
@@ -49,9 +54,9 @@ create table if not exists sites (
 comment on table sites is '플랫폼에서 운영하는 개별 사이트';
 comment on column sites.template_id is 'templateRegistry에 등록된 템플릿 ID';
 
-create index idx_sites_slug   on sites(slug);
-create index idx_sites_domain on sites(domain) where domain is not null;
-create index idx_sites_status on sites(status);
+create index if not exists idx_sites_slug   on sites(slug);
+create index if not exists idx_sites_domain on sites(domain) where domain is not null;
+create index if not exists idx_sites_status on sites(status);
 
 
 -- ============================================================
@@ -84,7 +89,7 @@ create table if not exists tags (
   slug    text not null,
   unique (site_id, slug)
 );
-create index idx_tags_site on tags(site_id);
+create index if not exists idx_tags_site on tags(site_id);
 
 create table if not exists topics (
   id          uuid primary key default uuid_generate_v4(),
@@ -94,14 +99,19 @@ create table if not exists topics (
   description text,
   unique (site_id, slug)
 );
-create index idx_topics_site on topics(site_id);
+create index if not exists idx_topics_site on topics(site_id);
 
 
 -- ============================================================
 -- 5. contents
 -- ============================================================
-create type content_type   as enum ('page', 'post', 'project', 'product', 'custom');
-create type content_status as enum ('draft', 'published', 'archived');
+do $$ begin
+  create type content_type as enum ('page', 'post', 'project', 'product', 'custom');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type content_status as enum ('draft', 'published', 'archived');
+exception when duplicate_object then null; end $$;
 
 create table if not exists contents (
   id           uuid primary key default uuid_generate_v4(),
@@ -123,11 +133,11 @@ comment on table contents is '모든 콘텐츠 (페이지/포스트/프로젝트
 comment on column contents.body is 'JSON 직렬화된 rich content 또는 Markdown 문자열';
 comment on column contents.meta is '{ title, description, ogImage, tags[], topics[] }';
 
-create index idx_contents_site_type   on contents(site_id, type);
-create index idx_contents_site_status on contents(site_id, status);
-create index idx_contents_published   on contents(published_at desc) where status = 'published';
+create index if not exists idx_contents_site_type   on contents(site_id, type);
+create index if not exists idx_contents_site_status on contents(site_id, status);
+create index if not exists idx_contents_published   on contents(published_at desc) where status = 'published';
 -- 제목 전문 검색
-create index idx_contents_title_trgm  on contents using gin(title gin_trgm_ops);
+create index if not exists idx_contents_title_trgm  on contents using gin(title gin_trgm_ops);
 
 
 -- ============================================================
@@ -160,14 +170,16 @@ create table if not exists projects (
   order_index integer not null default 0
 );
 
-create index idx_projects_site     on projects(site_id);
-create index idx_projects_featured on projects(site_id, featured) where featured = true;
+create index if not exists idx_projects_site     on projects(site_id);
+create index if not exists idx_projects_featured on projects(site_id, featured) where featured = true;
 
 
 -- ============================================================
 -- 8. media_assets
 -- ============================================================
-create type media_type as enum ('image', 'video', 'document', 'audio');
+do $$ begin
+  create type media_type as enum ('image', 'video', 'document', 'audio');
+exception when duplicate_object then null; end $$;
 
 create table if not exists media_assets (
   id             uuid primary key default uuid_generate_v4(),
@@ -185,15 +197,17 @@ create table if not exists media_assets (
   created_at     timestamptz not null default now()
 );
 
-create index idx_media_site      on media_assets(site_id);
-create index idx_media_type      on media_assets(site_id, type);
-create index idx_media_created   on media_assets(created_at desc);
+create index if not exists idx_media_site      on media_assets(site_id);
+create index if not exists idx_media_type      on media_assets(site_id, type);
+create index if not exists idx_media_created   on media_assets(created_at desc);
 
 
 -- ============================================================
 -- 9. site_members  (사이트별 역할 관리)
 -- ============================================================
-create type user_role as enum ('platform_admin', 'site_admin', 'editor', 'viewer');
+do $$ begin
+  create type user_role as enum ('platform_admin', 'site_admin', 'editor', 'viewer');
+exception when duplicate_object then null; end $$;
 
 create table if not exists site_members (
   id         uuid primary key default uuid_generate_v4(),
@@ -204,8 +218,8 @@ create table if not exists site_members (
   unique (site_id, user_id)
 );
 
-create index idx_site_members_user on site_members(user_id);
-create index idx_site_members_site on site_members(site_id);
+create index if not exists idx_site_members_user on site_members(user_id);
+create index if not exists idx_site_members_site on site_members(site_id);
 
 
 -- ============================================================
@@ -223,7 +237,7 @@ create table if not exists forms (
   unique (site_id, slug)
 );
 
-create index idx_forms_site on forms(site_id);
+create index if not exists idx_forms_site on forms(site_id);
 
 
 -- ============================================================
@@ -239,9 +253,9 @@ create table if not exists form_submissions (
   created_at  timestamptz not null default now()
 );
 
-create index idx_submissions_form    on form_submissions(form_id);
-create index idx_submissions_site    on form_submissions(site_id);
-create index idx_submissions_created on form_submissions(created_at desc);
+create index if not exists idx_submissions_form    on form_submissions(form_id);
+create index if not exists idx_submissions_site    on form_submissions(site_id);
+create index if not exists idx_submissions_created on form_submissions(created_at desc);
 
 
 -- ============================================================
@@ -255,14 +269,17 @@ begin
 end;
 $$;
 
+drop trigger if exists trg_sites_updated_at on sites;
 create trigger trg_sites_updated_at
   before update on sites
   for each row execute function set_updated_at();
 
+drop trigger if exists trg_site_settings_updated_at on site_settings;
 create trigger trg_site_settings_updated_at
   before update on site_settings
   for each row execute function set_updated_at();
 
+drop trigger if exists trg_contents_updated_at on contents;
 create trigger trg_contents_updated_at
   before update on contents
   for each row execute function set_updated_at();

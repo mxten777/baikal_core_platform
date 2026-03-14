@@ -2,11 +2,12 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@core/auth'
 
 const NAV_ITEMS = [
-  { to: '/admin', label: '대시보드', end: true },
-  { to: '/admin/content', label: '콘텐츠' },
-  { to: '/admin/submissions', label: '폼 제출' },
-  { to: '/admin/media', label: '미디어' },
-]
+  { to: '/admin', label: '대시보드', end: true, role: null },
+  { to: '/admin/content', label: '콘텐츠', end: false, role: null },
+  { to: '/admin/submissions', label: '폼 제출', end: false, role: null },
+  { to: '/admin/media', label: '미디어', end: false, role: null },
+  { to: '/admin/sites/new', label: '사이트 등록', end: false, role: 'platform_admin' },
+] as const
 
 export function AdminLayout() {
   const { user, signOut } = useAuth()
@@ -25,22 +26,25 @@ export function AdminLayout() {
           <span className="font-bold text-white text-sm tracking-wide">BAIKAL Admin</span>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {NAV_ITEMS.map(({ to, label, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                `block px-3 py-2 rounded text-sm transition-colors ${
-                  isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                }`
-              }
-            >
-              {label}
-            </NavLink>
-          ))}
+          {NAV_ITEMS.map(({ to, label, end, role }) => {
+            if (role && user?.role !== role) return null
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded text-sm transition-colors ${
+                    isActive
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }`
+                }
+              >
+                {label}
+              </NavLink>
+            )
+          })}
         </nav>
         <div className="px-4 py-4 border-t border-gray-700 text-xs text-gray-400">
           <p className="truncate mb-2">{user?.email}</p>

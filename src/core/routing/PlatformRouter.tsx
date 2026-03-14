@@ -180,6 +180,14 @@ export function PlatformRouter() {
                   Component: m.MediaPage,
                 })),
             },
+            // 신규 사이트 등록 (platform_admin 전용)
+            {
+              path: 'sites/new',
+              lazy: () =>
+                import('@/app/admin/pages/SiteProvisioningPage').then((m) => ({
+                  Component: m.SiteProvisioningPage,
+                })),
+            },
           ],
         },
       ],

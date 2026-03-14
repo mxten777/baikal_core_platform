@@ -40,6 +40,10 @@ export class ModuleRegistry {
   has(id: string): boolean {
     return this.store.has(id)
   }
+
+  keys(): string[] {
+    return Array.from(this.store.keys())
+  }
 }
 
 export const moduleRegistry = new ModuleRegistry()

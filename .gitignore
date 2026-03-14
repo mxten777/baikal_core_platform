@@ -9,6 +9,7 @@ node_modules/
 # 빌드 결과물
 dist/
 dist-ssr/
+*.tsbuildinfo
 
 # 캐시
 .vite/
@@ -17,3 +18,4 @@ dist-ssr/
 # 에디터
 .DS_Store
 *.local
+.vercel

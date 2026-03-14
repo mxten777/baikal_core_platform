@@ -106,20 +106,29 @@ export function resolveSiteSlug(): string {
 
   // 2순위: Vite 환경변수
   const envSlug = import.meta.env.VITE_SITE_SLUG
-  if (envSlug) return envSlug
+  if (envSlug) return envSlug.trim()
 
   // 3순위: hostname 매핑
   return hostnameToSlug(window.location.hostname)
 }
 
 function hostnameToSlug(hostname: string): string {
+  const defaultSlug: string = (import.meta.env.VITE_DEFAULT_SITE ?? 'baikalsys').trim()
+
   // localhost 개발 환경 기본값
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return import.meta.env.VITE_DEFAULT_SITE ?? 'baikalsys'
+    return defaultSlug
   }
 
   // www. 제거
   const clean = hostname.replace(/^www\./, '')
+
+  // 알려진 호스팅 플랫폼 도메인: vercel.app, netlify.app 등
+  // 이 경우 hostname에서 슬러그를 추출할 수 없으므로 기본값 사용
+  const PLATFORM_DOMAINS = ['vercel.app', 'netlify.app', 'pages.dev', 'github.io']
+  if (PLATFORM_DOMAINS.some((d) => clean.endsWith(d))) {
+    return defaultSlug
+  }
 
   // subdomain 기반: baikalsys.baikal.com → baikalsys
   const parts = clean.split('.')

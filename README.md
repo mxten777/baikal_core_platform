@@ -3,7 +3,7 @@
 멀티사이트 웹 플랫폼 엔진 — Vite + React 19 + TypeScript + Supabase + Vercel
 
 ---
-비밀번호:  4JWbc8f05v7yZfCX  
+
 ## 기술 스택
 
 | 영역 | 기술 |

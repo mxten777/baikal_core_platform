@@ -101,7 +101,7 @@ insert into contents (id, site_id, type, slug, title, body, status, author_id, p
     'BAIKAL Core Platform을 소개합니다',
     '멀티사이트 플랫폼 엔진 BAIKAL Core Platform의 첫 번째 포스트입니다.',
     'published',
-    '00000000-0000-0000-0000-000000000099',  -- 임시 author_id (실제 auth.users.id로 교체)
+    (select id from auth.users limit 1),  -- 첫 번째 가입 사용자를 author로 설정
     now(),
     '{"title":"BAIKAL Core Platform 소개","description":"멀티사이트 플랫폼 엔진","ogImage":null,"tags":["notice"],"topics":["dev"]}'::jsonb
   )

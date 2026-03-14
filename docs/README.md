@@ -14,6 +14,7 @@
 | [04_business_proposal.md](04_business_proposal.md) | 잠재 고객사·투자자·파트너 | 제품 소개, 비즈니스 모델, 경쟁 분석 |
 | [05_module_dev_guide.md](05_module_dev_guide.md) | 개발자 | 신규 모듈·템플릿 개발 규약 및 예제 코드 |
 | [06_new_site_guide.md](06_new_site_guide.md) | 플랫폼 운영자·개발자 | 신규 고객사 사이트 개설 전체 절차 |
+| [07_changelog.md](07_changelog.md) | 개발자 | 버전별 변경사항, 기술부채 목록, 업그레이드 체크리스트 |
 
 ---
 

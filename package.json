@@ -19,9 +19,18 @@
     "@testing-library/react": "^16.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-helmet": "^6.1.0",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^7.2.0"
+  },
+  "overrides": {
+    "path-to-regexp": "6.3.0",
+    "undici": "6.24.0",
+    "@vercel/python-analysis": {
+      "minimatch": "10.2.4"
+    },
+    "@vercel/static-config": {
+      "ajv": "8.18.0"
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

@@ -7,12 +7,6 @@ export default defineConfig({
         environment: 'jsdom',
         globals: true,
         setupFiles: ['./src/test/setup.ts'],
-        env: {
-            VITE_SUPABASE_URL: 'https://test.supabase.co',
-            VITE_SUPABASE_ANON_KEY: 'test-anon-key',
-            // VITE_SITE_SLUG는 비워둬서 hostname 기반 테스트가 동작하도록 함
-            VITE_DEFAULT_SITE: 'test-site',
-        },
     },
     resolve: {
         alias: {

@@ -23,9 +23,8 @@ export function useContent(opts: ContentListOptions) {
       }
       setLoading(false)
     })
-    // opts를 JSON 직렬화해서 deep compare
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(opts)])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opts.siteId, opts.type, opts.status, opts.tag, opts.topic, opts.limit, opts.offset, opts.orderBy, opts.order])
 
   return { items, total, loading, error }
 }

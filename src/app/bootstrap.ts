@@ -31,11 +31,10 @@ moduleRegistry.register('blog', blogModule)
 moduleRegistry.register('portfolio', portfolioModule)
 moduleRegistry.register('contact', contactModule)
 
-// 개발 중 등록 확인용 로그 (운영 환경에서는 제거)
-if (process.env.NODE_ENV !== 'production') {
+if (import.meta.env.DEV) {
   console.log('[BAIKAL] Bootstrap complete', {
-    templates: Array.from((templateRegistry as unknown as { store: Map<string, unknown> }).store?.keys() ?? []),
-    modules: Array.from((moduleRegistry as unknown as { store: Map<string, unknown> }).store?.keys() ?? []),
+    templates: templateRegistry.keys(),
+    modules: moduleRegistry.keys(),
   })
 }
 

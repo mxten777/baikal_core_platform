@@ -29,6 +29,10 @@ export class TemplateRegistry {
   has(id: string): boolean {
     return this.store.has(id)
   }
+
+  keys(): string[] {
+    return Array.from(this.store.keys())
+  }
 }
 
 export const templateRegistry = new TemplateRegistry()
